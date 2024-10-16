@@ -1,0 +1,8 @@
+@jfservice_HostAddress = http://localhost:5290
+
+GET {{jfservice_HostAddress}}/jfservice/
+Accept: application/json
+Accept: application/xml
+Accept: text/csv
+
+###
