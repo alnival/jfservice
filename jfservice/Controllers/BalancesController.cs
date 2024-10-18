@@ -1,3 +1,4 @@
+using jfservice.Formatters;
 using jfservice.Interfaces;
 using jfservice.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +47,7 @@ namespace jfservice.Controllers
             var payments = _payments
                 .Where(_ => _.account_id == request.accountId);
             if (!balances.Any()) { return BadRequest(new { ErrorMessage = "В файле балансов нет записей для этого аккаунта." }); }
-            //if (!payments.Any()) { return BadRequest(new { ErrorMessage = "В файл платежей нет записей для этого аккаунта." }); }
+            //if (!payments.Any()) { return BadRequest(new { ErrorMessage = "В файле платежей нет записей для этого аккаунта." }); }//в принципе оплат могло и не быть
             var starting = new GetBalancesStartingModel()
             {
                 Balance = balances.FirstOrDefault().in_balance,
@@ -66,6 +67,8 @@ namespace jfservice.Controllers
                             OpeningBalance = year == starting.Year ? starting.Balance : response.Last().ClosingBalance,
                             AmountAccrued = balances.Where(_ => _.year == year).Sum(_ => _.calculation),
                             AmountPaid = payments.Where(_ => _.year == year).Sum(_ => _.sum),
+                            //xml не возращает вычисляемое в модели поле, поэтому придется считать здесь
+                            ClosingBalance = (year == starting.Year ? starting.Balance : response.Last().ClosingBalance) - (balances.Where(_ => _.year == year).Sum(_ => _.calculation)) + (payments.Where(_ => _.year == year).Sum(_ => _.sum)),
                         });
                     }
                     break;
@@ -80,6 +83,8 @@ namespace jfservice.Controllers
                                 OpeningBalance = year == starting.Year & quarter == starting.Quarter ? starting.Balance : response.Last().ClosingBalance,
                                 AmountAccrued = balances.Where(_ => _.year == year & _.quarter == quarter).Sum(_ => _.calculation),
                                 AmountPaid = payments.Where(_ => _.year == year & _.quarter == quarter).Sum(_ => _.sum),
+                                //xml не возращает вычисляемое в модели поле, поэтому придется считать здесь
+                                ClosingBalance = (year == starting.Year & quarter == starting.Quarter ? starting.Balance : response.Last().ClosingBalance) - (balances.Where(_ => _.year == year & _.quarter == quarter).Sum(_ => _.calculation)) + (payments.Where(_ => _.year == year & _.quarter == quarter).Sum(_ => _.sum)),
                             });
                         }
                     }
@@ -95,6 +100,8 @@ namespace jfservice.Controllers
                                 OpeningBalance = year == starting.Year & month == starting.Month ? starting.Balance : response.Last().ClosingBalance,
                                 AmountAccrued = balances.Where(_ => _.year == year & _.month == month).Sum(_ => _.calculation),
                                 AmountPaid = payments.Where(_ => _.year == year & _.month == month).Sum(_ => _.sum),
+                                //xml не возращает вычисляемое в модели поле, поэтому придется считать здесь
+                                ClosingBalance = (year == starting.Year & month == starting.Month ? starting.Balance : response.Last().ClosingBalance) - (balances.Where(_ => _.year == year & _.month == month).Sum(_ => _.calculation)) + (payments.Where(_ => _.year == year & _.month == month).Sum(_ => _.sum)),
                             });
                         }
                     }
@@ -102,7 +109,7 @@ namespace jfservice.Controllers
                 default:
                     break;
             }
-            //return FormatResponse(response.OrderByDescending(_ => _.PeriodName).ToList());
+            //return FormatResponse(response.OrderByDescending(_ => _.PeriodName).ToList());//попробую воспользоваться стандартными обработчиками
             if (Request.Headers.Accept.ToString().Contains("text/csv"))
             {
                 return new CsvResult(response.OrderByDescending(_ => _.PeriodName).ToList());
@@ -121,8 +128,8 @@ namespace jfservice.Controllers
         //    }
         //    else if (Request.Headers.Accept.ToString().Contains("text/csv"))
         //    {
-        //        var csv = "PeriodName,OpeningBalance,AmountAccrued,AmountPaid,ClosingBalance\n" +
-        //            string.Join("\n", model.Select(_ => $"{_.PeriodName},{_.OpeningBalance},{_.AmountAccrued},{_.AmountPaid},{_.ClosingBalance}"));
+        //        var csv = "PeriodName;OpeningBalance;AmountAccrued;AmountPaid;ClosingBalance\n" +
+        //            string.Join("\n", model.Select(_ => $"{_.PeriodName};{_.OpeningBalance};{_.AmountAccrued};{_.AmountPaid};{_.ClosingBalance}"));
         //        return Content(csv, "text/csv");
         //    }
         //    else

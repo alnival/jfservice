@@ -8,17 +8,19 @@ namespace jfservice.Models
         public decimal OpeningBalance { get; set; }
         public decimal AmountAccrued { get; set; }
         public decimal AmountPaid { get; set; }
-        public decimal ClosingBalance => OpeningBalance - AmountAccrued + AmountPaid;
+        public decimal ClosingBalance { get; set; }
+        //public decimal ClosingBalance => OpeningBalance - AmountAccrued + AmountPaid;//xml обработчик почему-то не возращает вычисл€емое в модели поле
     }
 
     public class GetBalancesRequestModel
     {
         [Required]
-        public int accountId { get; set; } = 808251;
-        //[RegularExpression("^(год|квартал|мес€ц)$", ErrorMessage = "PeriodType может принимать значени€ только 'год', 'квартал' или 'мес€ц'.")]
-        //[Required]
+        [Range(1, int.MaxValue, ErrorMessage = "accountId должен быть положительным числом.")]
+        public int accountId { get; set; }
+        //[RegularExpression("^(год|квартал|мес€ц)$", ErrorMessage = "periodType может принимать значени€ только 'год', 'квартал' или 'мес€ц'.")]
         //public string periodType { get; set; }
-        [EnumDataType(typeof(PeriodType), ErrorMessage = "PeriodType может принимать значени€ только '√од' - 0, ' вартал' - 1 или 'ћес€ц' - 2.")]
+        [Required(ErrorMessage = "periodType не должно быть пустым.")]
+        [EnumDataType(typeof(PeriodType), ErrorMessage = "periodType может принимать значени€ только '√од' - 0, ' вартал' - 1 или 'ћес€ц' - 2.")]
         public PeriodType periodType { get; set; }
     }
 

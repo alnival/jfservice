@@ -4,19 +4,23 @@ using jfservice.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.Configure<FileSettings>(builder.Configuration.GetSection("FileSettings"));
 builder.Services.AddScoped<IDataLoaderService, DataLoaderService>();
-builder.Services.AddControllers()
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+})
+.ConfigureApiBehaviorOptions(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;//теперь € хот€ бы в фильтре могу сам проверить тип, но из описани€ модели сообщени€ об ошибках не берутс€
+})
                 .AddXmlSerializerFormatters();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -26,6 +30,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+//app.UseMiddleware<ValidationMiddleware>();
 
 app.MapControllers();
 
