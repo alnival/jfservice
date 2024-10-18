@@ -1,4 +1,4 @@
-using jfservice.Formatters;
+п»їusing jfservice.Formatters;
 using jfservice.Interfaces;
 using jfservice.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +29,7 @@ namespace jfservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Произошла ошибка при загрузке данных.");
+                _logger.LogError(ex, "РџСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР° РїСЂРё Р·Р°РіСЂСѓР·РєРµ РґР°РЅРЅС‹С….");
                 NoContent();
             }
         }
@@ -46,8 +46,8 @@ namespace jfservice.Controllers
                 .OrderBy(_ => _.period);
             var payments = _payments
                 .Where(_ => _.account_id == request.accountId);
-            if (!balances.Any()) { return BadRequest(new { ErrorMessage = "В файле балансов нет записей для этого аккаунта." }); }
-            //if (!payments.Any()) { return BadRequest(new { ErrorMessage = "В файле платежей нет записей для этого аккаунта." }); }//в принципе оплат могло и не быть
+            if (!balances.Any()) { return BadRequest(new { ErrorMessage = "Р’ С„Р°Р№Р»Рµ Р±Р°Р»Р°РЅСЃРѕРІ РЅРµС‚ Р·Р°РїРёСЃРµР№ РґР»СЏ СЌС‚РѕРіРѕ Р°РєРєР°СѓРЅС‚Р°." }); }
+            //if (!payments.Any()) { return BadRequest(new { ErrorMessage = "Р’ С„Р°Р№Р»Рµ РїР»Р°С‚РµР¶РµР№ РЅРµС‚ Р·Р°РїРёСЃРµР№ РґР»СЏ СЌС‚РѕРіРѕ Р°РєРєР°СѓРЅС‚Р°." }); }//РІ РїСЂРёРЅС†РёРїРµ, РѕРїР»Р°С‚ РјРѕРіР»Рѕ Рё РЅРµ Р±С‹С‚СЊ
             var starting = new GetBalancesStartingModel()
             {
                 Balance = balances.FirstOrDefault().in_balance,
@@ -58,7 +58,7 @@ namespace jfservice.Controllers
             var response = new List<GetBalancesResponseModel>();
             switch (request.periodType)
             {
-                case PeriodType.Год:
+                case PeriodType.Р“РѕРґ:
                     foreach (var year in balances.Select(_ => _.year).Concat(payments.Select(_ => _.year)).Distinct().Order())
                     {
                         response.Add(new GetBalancesResponseModel
@@ -67,40 +67,40 @@ namespace jfservice.Controllers
                             OpeningBalance = year == starting.Year ? starting.Balance : response.Last().ClosingBalance,
                             AmountAccrued = balances.Where(_ => _.year == year).Sum(_ => _.calculation),
                             AmountPaid = payments.Where(_ => _.year == year).Sum(_ => _.sum),
-                            //xml не возращает вычисляемое в модели поле, поэтому придется считать здесь
+                            //xml РЅРµ РІРѕР·СЂР°С‰Р°РµС‚ РІС‹С‡РёСЃР»СЏРµРјРѕРµ РІ РјРѕРґРµР»Рё РїРѕР»Рµ, РїРѕСЌС‚РѕРјСѓ РїСЂРёРґРµС‚СЃСЏ СЃС‡РёС‚Р°С‚СЊ Р·РґРµСЃСЊ
                             ClosingBalance = (year == starting.Year ? starting.Balance : response.Last().ClosingBalance) - (balances.Where(_ => _.year == year).Sum(_ => _.calculation)) + (payments.Where(_ => _.year == year).Sum(_ => _.sum)),
                         });
                     }
                     break;
-                case PeriodType.Квартал:
+                case PeriodType.РљРІР°СЂС‚Р°Р»:
                     foreach (var year in balances.Select(_ => _.year).Concat(payments.Select(_ => _.year)).Distinct().Order())
                     {
                         foreach (var quarter in balances.Where(_ => _.year == year).Select(_ => _.quarter).Concat(payments.Where(_ => _.year == year).Select(_ => _.quarter)).Distinct().Order())
                         {
                             response.Add(new GetBalancesResponseModel
                             {
-                                PeriodName = $"{year} год {quarter} кваратал",
+                                PeriodName = $"{year} РіРѕРґ {quarter} РєРІР°СЂР°С‚Р°Р»",
                                 OpeningBalance = year == starting.Year & quarter == starting.Quarter ? starting.Balance : response.Last().ClosingBalance,
                                 AmountAccrued = balances.Where(_ => _.year == year & _.quarter == quarter).Sum(_ => _.calculation),
                                 AmountPaid = payments.Where(_ => _.year == year & _.quarter == quarter).Sum(_ => _.sum),
-                                //xml не возращает вычисляемое в модели поле, поэтому придется считать здесь
+                                //xml РЅРµ РІРѕР·СЂР°С‰Р°РµС‚ РІС‹С‡РёСЃР»СЏРµРјРѕРµ РІ РјРѕРґРµР»Рё РїРѕР»Рµ, РїРѕСЌС‚РѕРјСѓ РїСЂРёРґРµС‚СЃСЏ СЃС‡РёС‚Р°С‚СЊ Р·РґРµСЃСЊ
                                 ClosingBalance = (year == starting.Year & quarter == starting.Quarter ? starting.Balance : response.Last().ClosingBalance) - (balances.Where(_ => _.year == year & _.quarter == quarter).Sum(_ => _.calculation)) + (payments.Where(_ => _.year == year & _.quarter == quarter).Sum(_ => _.sum)),
                             });
                         }
                     }
                     break;
-                case PeriodType.Месяц:
+                case PeriodType.РњРµСЃСЏС†:
                     foreach (var year in balances.Select(_ => _.year).Concat(payments.Select(_ => _.year)).Distinct().Order())
                     {
                         foreach (var month in balances.Where(_ => _.year == year).Select(_ => _.month).Concat(payments.Where(_ => _.year == year).Select(_ => _.month)).Distinct().Order())
                         {
                             response.Add(new GetBalancesResponseModel
                             {
-                                PeriodName = $"{year} год {month:00} месяц ({CultureInfo.GetCultureInfoByIetfLanguageTag("ru-RU").DateTimeFormat.GetMonthName(month)})",
+                                PeriodName = $"{year} РіРѕРґ {month:00} РјРµСЃСЏС† ({CultureInfo.GetCultureInfoByIetfLanguageTag("ru-RU").DateTimeFormat.GetMonthName(month)})",
                                 OpeningBalance = year == starting.Year & month == starting.Month ? starting.Balance : response.Last().ClosingBalance,
                                 AmountAccrued = balances.Where(_ => _.year == year & _.month == month).Sum(_ => _.calculation),
                                 AmountPaid = payments.Where(_ => _.year == year & _.month == month).Sum(_ => _.sum),
-                                //xml не возращает вычисляемое в модели поле, поэтому придется считать здесь
+                                //xml РЅРµ РІРѕР·СЂР°С‰Р°РµС‚ РІС‹С‡РёСЃР»СЏРµРјРѕРµ РІ РјРѕРґРµР»Рё РїРѕР»Рµ, РїРѕСЌС‚РѕРјСѓ РїСЂРёРґРµС‚СЃСЏ СЃС‡РёС‚Р°С‚СЊ Р·РґРµСЃСЊ
                                 ClosingBalance = (year == starting.Year & month == starting.Month ? starting.Balance : response.Last().ClosingBalance) - (balances.Where(_ => _.year == year & _.month == month).Sum(_ => _.calculation)) + (payments.Where(_ => _.year == year & _.month == month).Sum(_ => _.sum)),
                             });
                         }
@@ -109,7 +109,7 @@ namespace jfservice.Controllers
                 default:
                     break;
             }
-            //return FormatResponse(response.OrderByDescending(_ => _.PeriodName).ToList());//попробую воспользоваться стандартными обработчиками
+            //return FormatResponse(response.OrderByDescending(_ => _.PeriodName).ToList());//РїРѕРїСЂРѕР±СѓСЋ РІРѕСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ СЃС‚Р°РЅРґР°СЂС‚РЅС‹РјРё РѕР±СЂР°Р±РѕС‚С‡РёРєР°РјРё
             if (Request.Headers.Accept.ToString().Contains("text/csv"))
             {
                 return new CsvResult(response.OrderByDescending(_ => _.PeriodName).ToList());
