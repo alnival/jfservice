@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+п»їusing System.ComponentModel.DataAnnotations;
 
 namespace jfservice.Models
 {
@@ -9,26 +9,26 @@ namespace jfservice.Models
         public decimal AmountAccrued { get; set; }
         public decimal AmountPaid { get; set; }
         public decimal ClosingBalance { get; set; }
-        //public decimal ClosingBalance => OpeningBalance - AmountAccrued + AmountPaid;//xml обработчик почему-то не возращает вычисляемое в модели поле
+        //public decimal ClosingBalance => OpeningBalance - AmountAccrued + AmountPaid;//xml РѕР±СЂР°Р±РѕС‚С‡РёРє РїРѕС‡РµРјСѓ-С‚Рѕ РЅРµ РІРѕР·СЂР°С‰Р°РµС‚ РІС‹С‡РёСЃР»В¤РµРјРѕРµ РІ РјРѕРґРµР»Рё РїРѕР»Рµ
     }
 
     public class GetBalancesRequestModel
     {
         [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "accountId должен быть положительным числом.")]
+        [Range(1, int.MaxValue, ErrorMessage = "accountId РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Рј С‡РёСЃР»РѕРј.")]
         public int accountId { get; set; }
-        //[RegularExpression("^(год|квартал|месяц)$", ErrorMessage = "periodType может принимать значения только 'год', 'квартал' или 'месяц'.")]
+        //[RegularExpression("^(РіРѕРґ|РєРІР°СЂС‚Р°Р»|РјРµСЃВ¤С†)$", ErrorMessage = "periodType РјРѕР¶РµС‚ РїСЂРёРЅРёРјР°С‚СЊ Р·РЅР°С‡РµРЅРёВ¤ С‚РѕР»СЊРєРѕ 'РіРѕРґ', 'РєРІР°СЂС‚Р°Р»' РёР»Рё 'РјРµСЃВ¤С†'.")]
         //public string periodType { get; set; }
-        [Required(ErrorMessage = "periodType не должно быть пустым.")]
-        [EnumDataType(typeof(PeriodType), ErrorMessage = "periodType может принимать значения только 'Год' - 0, 'Квартал' - 1 или 'Месяц' - 2.")]
+        [Required(ErrorMessage = "periodType РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј.")]
+        [EnumDataType(typeof(PeriodType), ErrorMessage = "periodType РјРѕР¶РµС‚ РїСЂРёРЅРёРјР°С‚СЊ Р·РЅР°С‡РµРЅРёВ¤ С‚РѕР»СЊРєРѕ 'в€љРѕРґ' - 0, 'В РІР°СЂС‚Р°Р»' - 1 РёР»Рё 'С›РµСЃВ¤С†' - 2.")]
         public PeriodType periodType { get; set; }
     }
 
     public enum PeriodType
     {
-        Год,
-        Квартал,
-        Месяц,
+        в€љРѕРґ,
+        В РІР°СЂС‚Р°Р»,
+        С›РµСЃВ¤С†,
     }
 
     public class GetBalancesStartingModel

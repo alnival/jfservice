@@ -1,4 +1,4 @@
-п»їusing jfservice.Interfaces;
+using jfservice.Interfaces;
 using jfservice.Models;
 using jfservice.Services;
 
@@ -12,7 +12,7 @@ builder.Services.AddControllers(options =>
 })
 .ConfigureApiBehaviorOptions(options =>
 {
-    options.SuppressModelStateInvalidFilter = true;//С‚РµРїРµСЂСЊ СЏ С…РѕС‚СЏ Р±С‹ РІ С„РёР»СЊС‚СЂРµ РјРѕРіСѓ СЃР°Рј РїСЂРѕРІРµСЂРёС‚СЊ С‚РёРї, РЅРѕ РёР· РѕРїРёСЃР°РЅРёСЏ РјРѕРґРµР»Рё СЃРѕРѕР±С‰РµРЅРёСЏ РѕР± РѕС€РёР±РєР°С… РЅРµ Р±РµСЂСѓС‚СЃСЏ
+    options.SuppressModelStateInvalidFilter = true;//теперь я хотя бы в фильтре могу сам проверить тип, но из описания модели сообщения об ошибках не берутся
 })
                 .AddXmlSerializerFormatters();
 

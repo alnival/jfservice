@@ -23,14 +23,14 @@ namespace jfservice.Services
                     var result = JsonSerializer.Deserialize<List<T>>(json);
                     if (result == null)
                     {
-                        _logger.LogError($"Невозможно получить даныне из файла {fileName}.");
+                        _logger.LogError($"Невозможно получить данные из файла {fileName}.");
                         throw new DataFileBadFormatException(fileName);
                     }
                     return result;
                 }
                 catch (Exception)
                 {
-                    _logger.LogError($"Невозможно получить даныне из файла {fileName}.");
+                    _logger.LogError($"Невозможно получить данные из файла {fileName}.");
                     throw new DataFileBadFormatException(fileName);
                 }
             }
@@ -43,7 +43,7 @@ namespace jfservice.Services
 
         public class DataFileBadFormatException : Exception
         {
-            public DataFileBadFormatException(string fileName) : base($"Невозможно получить даныне из файла {fileName}.") { }
+            public DataFileBadFormatException(string fileName) : base($"Невозможно получить данные из файла {fileName}.") { }
         }
 
         public class DataFileNotFoundException : Exception
